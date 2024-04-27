@@ -3,9 +3,12 @@ from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from forms import IngresoForm
+import requests
 
 app = Flask(__name__)
 api = Api(app)
+
+url = 'http://127.0.0.1:5000/transactions'
 
 # Configuración de la base de datos SQLite utilizando SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.db'
@@ -85,9 +88,20 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/new_transaction')
+@app.route('/new_transaction', methods=['GET','POST'])
 def transaction():
     form = IngresoForm()
+    if form.validate_on_submit():
+        concepto = form.concepto.data
+        cantidad = form.cantidad.data
+        fecha = form.fecha.data
+        descripcion = form.descripcion.data
+        data = {
+            'concepto': concepto,
+            'cantidad': cantidad,
+            'fecha': fecha,
+            'descripcion': descripcion
+        }
     
     return render_template('transaction.html')
 
