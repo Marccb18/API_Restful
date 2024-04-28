@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
 </head>
 <body>
-    
+    <form action="" method="post">
+        <p class="title">Realizar una Transacción</p>
+        {{ form.csrf_token }}
+        {{ form.concepto(placeholder='Concepto') }}
+        {{ form.cantidad(placeholder='Cantidad (En negativo si es un gasto)') }}
+        {{ form.fecha(placeholder='Fecha') }}
+        {{ form.descripcion(placeholder='Descripción') }}
+        {{ form.submit }}
+    </form>
 </body>
 </html>
