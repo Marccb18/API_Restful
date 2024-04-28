@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Saldo Actual</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <style>
+        .container {
+            margin-top: 50px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Saldo Actual</h1>
+        {% if saldo is not none %}
+            <p class="content">El saldo actual es: {{ saldo }}</p>
+        {% else %}
+            <p class="content">Error al obtener el saldo actual. Por favor, inténtalo de nuevo más tarde.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

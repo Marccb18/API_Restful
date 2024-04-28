@@ -3,18 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transaccion</title>
+    <title>Transacción</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <style>
+        .container {
+            margin-top: 50px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <form action="" method="post">
-        <p class="title">Realizar una Transacción</p>
-        {{ form.csrf_token }}
-        {{ form.concepto(placeholder='Concepto') }}
-        {{ form.cantidad(placeholder='Cantidad (En negativo si es un gasto)') }}
-        {{ form.fecha(placeholder='Fecha') }}
-        {{ form.descripcion(placeholder='Descripción') }}
-        {{ form.submit }}
-    </form>
+    <div class="container">
+        <form action="" method="post">
+            <p class="title">Realizar una Transacción</p>
+            {{ form.csrf_token }}
+            <div class="field">
+                <div class="control">
+                    {{ form.concepto(class="input", placeholder='Concepto') }}
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    {{ form.cantidad(class="input", placeholder='Cantidad (En negativo si es un gasto)') }}
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    {{ form.fecha(class="input", placeholder='Fecha') }}
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    {{ form.descripcion(class="input", placeholder='Descripción (Opcional)') }}
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    {{ form.submit(class="button is-primary", value="Enviar") }}
+                </div>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

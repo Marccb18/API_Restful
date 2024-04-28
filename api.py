@@ -51,7 +51,7 @@ class Bank(Resource):
         descripcion = args['descripcion']
         new_transaction = BankModel(concepto=concepto, cantidad=cantidad, fecha=fecha, descripcion=descripcion)
         db.session.add(new_transaction)
-        db.session.commit()  # Commit the transaction
+        db.session.commit()
         return {'id': new_transaction.id, 'concepto': concepto, 'cantidad': cantidad,
                 'fecha': fecha.strftime('%Y-%m-%d'), 'descripcion': descripcion}, 201
 
@@ -84,6 +84,19 @@ class Bank(Resource):
 
 api.add_resource(Bank, '/transactions', '/transactions/<int:bank_id>')
 
+class SaldoActual(Resource):
+    def get(self):
+        transactions = BankModel.query.all()
+        saldo = 0
+        for transaction in transactions:
+            if transaction.cantidad > 0:
+                saldo += transaction.cantidad
+            else:
+                saldo -= abs(transaction.cantidad)
+        return {'saldo': saldo}
+    
+api.add_resource(SaldoActual, '/transactions/saldo')
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -114,7 +127,24 @@ def transaction():
     
     return render_template('transaction.html', form=form)
 
+@app.route('/saldo_actual', methods=['GET'])
+def saldo_actual():
+    try:
+        response = requests.get(url + '/saldo')
+        if response.status_code == 200:
+            saldo = response.json()['saldo']
+            return render_template('saldo_actual.html', saldo=saldo)
+        else:
+            flash('Error al obtener el saldo actual', 'error')
+            print("Error al obtener el saldo actual:", response.text)  # Imprimir contenido de la respuesta
+    except requests.exceptions.RequestException as e:
+        flash('Error al enviar la solicitud', 'error')
+        print("Error al enviar la solicitud:", e)  # Imprimir excepción
+
+    return render_template('saldo_actual.html', saldo=None)  # Pasar saldo como None si hay algún error
+
+
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # Crear las tablas en la base de datos si no existen
+        db.create_all()
     app.run(debug=True)
