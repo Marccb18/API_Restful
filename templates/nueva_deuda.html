@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Deuda</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Nueva Deuda</h1>
+            <form action="{{ url_for('deudas') }}" method="POST">
+                {{ form.hidden_tag() }} <!-- Incluir los campos ocultos del formulario Flask-WTF -->
+                <div class="field">
+                    <label class="label">Concepto</label>
+                    <div class="control">
+                        {{ form.concepto(class="input", placeholder="Concepto") }}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Cantidad</label>
+                    <div class="control">
+                        {{ form.cantidad(class="input", placeholder="Cantidad") }}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Deudor</label>
+                    <div class="control">
+                        {{ form.deudor(class="input", placeholder="Deudor") }}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Fecha de la deuda (opcional)</label>
+                    <div class="control">
+                        {{ form.fecha(class="input", type="date") }}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Comentario (opcional)</label>
+                    <div class="control">
+                        {{ form.comentario(class="textarea", placeholder="Comentario") }}
+                    </div>
+                </div>
+                <div class="field is-grouped">
+                    <div class="control">
+                        {{ form.submit(class='button is-link', value='Crear Deuda') }}
+                    </div>
+                    <div class="control">
+                        <a href="{{ url_for('index') }}" class="button is-text">Cancelar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>

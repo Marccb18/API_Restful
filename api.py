@@ -1,8 +1,8 @@
-from flask import Flask, render_template,redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from forms import IngresoForm
+from forms import IngresoForm, DeudaForm
 import requests
 
 app = Flask(__name__)
@@ -26,6 +26,15 @@ class BankModel(db.Model):
 
     def __repr__(self):
         return f'<BankModel {self.id} - {self.concepto}>'
+    
+class DeudaModel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    concepto = db.Column(db.String(100))
+    cantidad = db.Column(db.Integer)
+    deudor = db.Column(db.String(200))
+    fecha = db.Column(db.Date)
+    comentario = db.Column(db.String(300))
+    pagada = db.Column(db.Boolean, default=False)
 
 # Analizamos/"parseamos" los argumentos de la solicitud.
 parser = reqparse.RequestParser()
@@ -97,6 +106,84 @@ class SaldoActual(Resource):
     
 api.add_resource(SaldoActual, '/transactions/saldo')
 
+class Deuda(Resource):
+    def get(self,deuda_id):
+        deuda = DeudaModel.query.filter_by(id=deuda_id).first()
+        if deuda:
+            return {
+                'id':deuda.id,
+                'concepto': deuda.concepto,
+                'cantidad': deuda.cantidad,
+                'deudor': deuda.deudor,
+                'fecha': deuda.fecha.strftime('%Y-%m-%d'),
+                'comentario': deuda.comentario
+            }
+        else:
+            return {'message': 'Deuda no encontrada'}, 404
+        
+    def post(self):
+        args = parser.parse_args()
+        concepto = args['concepto']
+        cantidad = -args['cantidad']  # Las deduas se representan con cantidades negativas
+        deudor = args['deudor']
+        fecha = args['fecha']
+        comentario = args['comentario']
+        n_deuda = DeudaModel(concepto=concepto, cantidad=cantidad, deudor=deudor, fecha=fecha, comentario=comentario)
+        db.session.add(n_deuda)
+        db.session.commit()
+        return {
+            'id': n_deuda.id,
+            'concepto': concepto,
+            'cantidad': cantidad,
+            'deudor': deudor,
+            'fecha': fecha,
+            'comentario': comentario
+        }
+    
+    def put(self, deuda_id):
+        args = parser.parse_args()
+        concepto =args['concepto']
+        cantidad = -args['cantidad']
+        deudor = args['deudor']
+        fecha = args['fecha']
+        comentario = args['comentario']
+        pagada = args['pagada']
+        deuda = DeudaModel.query.filter_by(id=deuda_id).first()
+        if deuda:
+            deuda.concepto = concepto
+            deuda.cantidad = cantidad
+            deuda.deudor = deudor
+            deuda.fecha = fecha
+            deuda.comentario = comentario
+            deuda.pagada = pagada
+            db.session.commit()
+            return {
+                'id': deuda_id,
+                'concepto': concepto,
+                'cantidad': cantidad,
+                'deudor': deudor,
+                'fecha': fecha.strftime('%Y-%m-%d'),
+                'comentario': comentario,
+                'pagada': pagada
+            }
+        else:
+            return {'message': 'Deuda no encontrada'}, 404
+        
+    def delete(self,deuda_id):
+        deuda = DeudaModel.query.filter_by(id=deuda_id).first()
+        if deuda:
+            db.session.delete(deuda)
+            db.session.commit()
+            return '', 204
+        else:
+            return {'message', 'Deuda no encontrada'}, 404
+        
+
+api.add_resource(Deuda, '/transactions/deudas', '/transactions/deudas/<int:deuda_id>')
+    
+
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -143,6 +230,72 @@ def saldo_actual():
 
     return render_template('saldo_actual.html', saldo=None)  # Pasar saldo como None si hay algún error
 
+@app.route('/ver_deudas', methods=['GET','POST'])
+def ver_deudas():
+    try:
+        response = requests.get(url + '/deudas')
+        if response.status_code == 200:
+            deudas = response.json()
+            return render_template('ver_deudas.html', deudas=deudas)
+        else:
+            flash('Error al obtener las deudas', 'error')
+            print('Error al obtener las deudas:', response.text)
+    except requests.exceptions.RequestException as e:
+        flash('Error al enviar la solicitud', 'error')
+        print('Error al enviar la solicitud', e)
+
+    return render_template('ver_deudas.html', deudas=None)
+
+@app.route('/actualizar_deudas', methods=['POST'])
+def actualizar_deudas():
+    data = {}
+    for key, value in request.form.items():
+        if key.startswith('deuda_'):
+            deuda_id = int(key.split('_')[1])
+            pagada = True if value == 'on' else False
+            data[deuda_id] = pagada
+
+    try:
+        response = requests.put(url + '/deudas', json=data)
+        if response.status_code == 200:
+            flash('Deudas actualizadas exitosamente', 'success')
+        else:
+            flash('Error al actualizar las deudas', 'error')
+            print('Error al actualizar las deudas:', response.text)
+    except requests.exceptions.RequestException as e:
+        flash('Error al enviar la solicitud', 'error')
+        print('Error al enviar la solicitud', e)
+
+    return redirect(url_for('ver_deudas'))
+
+@app.route('/nueva_deuda', methods=['GET', 'POST'])
+def nueva_deuda():
+    form = DeudaForm()  # Suponiendo que tienes un formulario llamado DeudaForm para ingresar datos de la deuda
+    if form.validate_on_submit():
+        concepto = form.concepto.data
+        cantidad = form.cantidad.data
+        deudor = form.deudor.data
+        fecha = form.fecha.data
+        comentario = form.comentario.data
+        data = {
+            'concepto': concepto,
+            'cantidad': cantidad,
+            'deudor': deudor,
+            'fecha': fecha.strftime('%Y-%m-%d'),
+            'comentario': comentario
+        }
+        try:
+            response = requests.post('http://127.0.0.1:5000/transactions/deudas', json=data)
+            if response.status_code == 200:
+                flash('Deuda creada exitosamente', 'success')
+            else:
+                flash('Error al crear la deuda', 'error')
+            return redirect(url_for('ver_deudas'))
+        except requests.exceptions.RequestException as e:
+            flash('Error al enviar la solicitud', 'error')
+            print('Error al enviar la solicitud', e)
+
+    return render_template('nueva_deuda.html', form=form)
 
 if __name__ == '__main__':
     with app.app_context():

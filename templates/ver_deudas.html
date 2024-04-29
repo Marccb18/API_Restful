@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Deudas</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Deudas</h1>
+            <form method="post" action="{{ url_for('actualizar_deudas') }}">
+                <table class="table is-bordered is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Cantidad</th>
+                            <th>Fecha</th>
+                            <th>Descripción</th>
+                            <th>Pagada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if deudas %}
+                            {% for item in deudas %}
+                                <tr>
+                                    <td>{{ item.concepto }}</td>
+                                    <td>{{ item.cantidad }}</td>
+                                    <td>{{ item.fecha }}</td>
+                                    <td>{{ item.descripcion }}</td>
+                                    <td>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="deuda_{{ item.id }}" {% if item.pagada %} checked {% endif %}>
+                                        </label>
+                                    </td>
+                                </tr>
+                            {% endfor %}k
+                        {% else %}
+                            <tr>
+                                <td colspan="5">No hay deudas pendientes</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Actualizar</button>
+                    </div>
+                    <div class="control">
+                        <a href="{{ url_for('nueva_deuda') }}" class="button is-link">Nueva Deuda</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>
