@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
+from forms import IngresoForm, DeudaForm
 
 app = Flask(__name__)
 api = Api(app)
@@ -83,8 +84,8 @@ def calcular_balance_mes():
 
 
 def calcular_balance_anual():
-    fecha_inicio_anio = datetime.now().replace(month=1, day=1).date()
-    return calcular_balance_periodo(fecha_inicio_anio)
+    fecha_inicio_año = datetime.now().replace(month=1, day=1).date()
+    return calcular_balance_periodo(fecha_inicio_año)
 
 
 def calcular_balance_periodo(fecha_inicio):
@@ -119,6 +120,43 @@ class Transacciones(Resource):
             'descripcion': nueva_transaccion.descripcion,
             'es_gasto': nueva_transaccion.es_gasto
         }, 201
+    
+    def put(self,transaccion_id):
+        args = parser.parse_args()
+        transaccion = Transaccion.query.get(transaccion_id)
+        if not transaccion:
+            return {'message': 'Transaccion no encontrada'}, 404
+        
+        if 'concepto' in args:
+            transaccion.concepto = args['concepto']
+        if 'cantidad' in args:
+            transaccion.cantidad = args['cantidad']
+        if 'fecha' in args:
+            transaccion.fecha = args['fecha']
+        if 'descripcion' in args:
+            transaccion.descripcion = args['descripcion']
+        if 'es_gasto' in args:
+            transaccion.es_gasto = args['es_gasto']
+
+        db.session.commit()
+
+        return {
+            'id': transaccion.id,
+            'concepto': transaccion.concepto,
+            'cantidad': transaccion.cantidad,
+            'fecha': transaccion.fecha.strftime('%d-%m-%Y'),
+            'descripcion': transaccion.descripcion,
+            'es_gasto': transaccion.es_gasto
+        }
+    
+    def delete(self, transaccion_id):
+        transaccion = Transaccion.query.get(transaccion_id)
+        if not transaccion:
+            return {'message': 'Transacción no encontrada'}, 404
+
+        db.session.delete(transaccion)
+        db.session.commit()
+        return {'message': 'Transacción eliminada correctamente'}, 200
 
 
 class Deudas(Resource):
@@ -148,11 +186,80 @@ class Deudas(Resource):
             'comentario': nueva_deuda.comentario,
             'pagada': nueva_deuda.pagada
         }, 201
+    
+    def put(self, deuda_id):
+        args = deuda_parser.parse_args()
+        deuda = Deuda.query.get(deuda_id)
+        if not deuda:
+            return {'message': 'Deuda no encontrada'}, 404
+
+        # Actualizar los campos modificables
+        if 'concepto' in args:
+            deuda.concepto = args['concepto']
+        if 'cantidad' in args:
+            deuda.cantidad = args['cantidad']
+        if 'deudor' in args:
+            deuda.deudor = args['deudor']
+        if 'fecha' in args:
+            deuda.fecha = args['fecha']
+        if 'comentario' in args:
+            deuda.comentario = args['comentario']
+        if 'pagada' in args:
+            deuda.pagada = args['pagada']
+
+        db.session.commit()
+        return {
+            'id': deuda.id,
+            'concepto': deuda.concepto,
+            'cantidad': deuda.cantidad,
+            'deudor': deuda.deudor,
+            'fecha': deuda.fecha.strftime('%d-%m-%Y'),
+            'comentario': deuda.comentario,
+            'pagada': deuda.pagada
+        }
+
+    def delete(self, deuda_id):
+        deuda = Deuda.query.get(deuda_id)
+        if not deuda:
+            return {'message': 'Deuda no encontrada'}, 404
+
+        db.session.delete(deuda)
+        db.session.commit()
+        return {'message': 'Deuda eliminada correctamente'}, 200
 
 
-api.add_resource(GestionFinanzas, '/')
+api.add_resource(GestionFinanzas, '/finanzas')
 api.add_resource(Transacciones, '/transacciones')
 api.add_resource(Deudas, '/deudas')
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/ingreso', methods=['GET','POST'])
+def nuevo_ingreso():
+    form = IngresoForm()
+    if form.validate_on_submit():
+        concepto = form.concepto.data
+        cantidad = form.cantidad.data
+        fecha = form.fecha.data
+        descripcion = form.descripcion.data
+        if cantidad >= 0:
+            es_gasto = False
+        else:
+            es_gasto = True
+        new_transaccion = Transaccion(concepto=concepto,cantidad=cantidad,fecha=fecha,descripcion=descripcion,es_gasto=es_gasto)
+        db.session.add(new_transaccion)
+        db.session.commit()
+        return redirect(url_for('index'))
+    else:
+        return render_template('transaction.html', form=form)
+    
+
+
+
+
 
 
 if __name__ == '__main__':
