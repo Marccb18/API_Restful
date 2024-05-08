@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 from flask_restful import Api, Resource, reqparse
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from forms import IngresoForm, DeudaForm
+from models import *
 
 app = Flask(__name__)
 api = Api(app)
@@ -11,27 +11,8 @@ api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///finanzas.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = '1234'
-db = SQLAlchemy(app)
 
-
-class Transaccion(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    concepto = db.Column(db.String(100))
-    cantidad = db.Column(db.Float)
-    fecha = db.Column(db.Date)
-    descripcion = db.Column(db.String(300))
-    es_gasto = db.Column(db.Boolean)
-
-
-class Deuda(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    concepto = db.Column(db.String(100))
-    cantidad = db.Column(db.Float)
-    deudor = db.Column(db.String(200))
-    fecha = db.Column(db.Date)
-    comentario = db.Column(db.String(300))
-    pagada = db.Column(db.Boolean, default=False)
-
+db.init_app(app)
 
 parser = reqparse.RequestParser()
 parser.add_argument('concepto', type=str, required=True)
@@ -62,7 +43,7 @@ class GestionFinanzas(Resource):
             'saldo_actual': saldo_actual,
             'balance_semana': balance_semana,
             'balance_mes': balance_mes,
-            'balance_anio': balance_anual
+            'balance_anual': balance_anual
         }
 
 
@@ -256,6 +237,28 @@ def nuevo_ingreso():
     else:
         return render_template('transaction.html', form=form)
     
+
+@app.route('/ver_deudas', methods=['GET','POST'])
+def ver_deudas():
+    deudas = Deuda.query.all()
+    return render_template('ver_deudas.html',deudas=deudas)
+
+@app.route('/nueva_deuda', methods=['GET','POST'])
+def nueva_deuda():
+    form = DeudaForm()
+    if form.validate_on_submit():
+        concepto = form.concepto.data
+        cantidad = form.cantidad.data
+        deudor = form.deudor.data
+        fecha = form.fecha.data
+        comentario = form.comentario.data
+        pagada = form.pagada.data
+        nueva_deuda = Deuda(concepto=concepto,cantidad=cantidad,deudor=deudor,fecha=fecha,comentario=comentario,pagada=pagada)
+        
+        
+        return redirect(url_for('ver_deudas'))
+    else:
+        return render_template('nueva_deuda.html',form=form)
 
 
 
