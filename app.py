@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
@@ -28,7 +27,7 @@ class Deuda(db.Model):
     concepto = db.Column(db.String(100))
     cantidad = db.Column(db.Float)
     deudor = db.Column(db.String(200))
-    fecha = db.Column(db.Date)\
+    fecha = db.Column(db.Date)
     comentario = db.Column(db.String(300))
     pagada = db.Column(db.Boolean, default=False)
 
