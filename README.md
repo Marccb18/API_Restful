@@ -1,155 +1,85 @@
-# API de Tareas (To-Do)
+markdown
+Copy code
+# API de Gestión Bancaria
 
-Ejemplo sencillo de creación de una API gestionada con `Flask` y `Flask-RESTful` que permite realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) en una lista de tareas (To-Do).
+Esta es una API simple para gestionar transacciones bancarias y deudas.
 
-<strong>Cuidado/Importante:</strong> Este código no tiene implementada lógica para evitar errores.
+## Requisitos
 
-## Librerías necesarias
-- Flask: (`pip install flask`) Framework web ligero en Python que facilita la creación de aplicaciones web.
-- Flask-RESTful: (`pip install flask-restful`) Extensión de Flask que facilita la creación de servicios web RESTful en Python.
+- Python 3.x
+- Flask
+- Flask-Restful
+- Flask-SQLAlchemy
 
-## Conceptos
+## Instalación
 
-En este repositorio aparecen diferentes conceptos que debemos entender.
+1. Clona este repositorio:
 
-- <strong>API:</strong> Son las siglas de Interfaz de Programación de Aplicaciones y define cómo interactuar con un software o servicio, permitiendo la comunicación entre diferentes sistemas informáticos.
-- <strong>Protocolo HTTP:</strong> Protocolo de Transferencia de Hipertexto, define cómo se comunican los navegadores web y los servidores web, facilitando la transferencia de datos.
-- <strong>GET:</strong> Método de solicitud en HTTP utilizado para obtener datos de un recurso específico en un servidor. Los datos se envían a través de la URL.
-- <strong>POST:</strong> Método de solicitud en HTTP utilizado para enviar datos al servidor para crear o actualizar un recurso. Los datos se envían en el cuerpo del mensaje HTTP.
-- <strong>PUT:</strong> Método de solicitud en HTTP utilizado para enviar datos al servidor para crear o actualizar un recurso. Se usa típicamente para actualizar recursos existentes.
-- <strong>DELETE:</strong> Método de solicitud en HTTP utilizado para solicitar al servidor que elimine un recurso específico. Se espera que la eliminación sea irreversible.
-- <strong>"Parsear"</strong> es un término informático que se refiere al proceso de analizar una cadena de caracteres o datos en un formato específico, como un lenguaje de programación o un formato estructurado, para extraer información o realizar operaciones sobre ella.
+git clone https://github.com/tu_usuario/tu_repositorio.git
+
+markdown
+Copy code
+
+2. Instala las dependencias:
+
+pip install -r requirements.txt
+
+markdown
+Copy code
 
 ## Uso
 
-1. Ejecuta la aplicación Flask:
+Para ejecutar la API, simplemente ejecuta el archivo `app.py`:
 
-    ```bash
-    python app.py
-    ```
+python app.py
 
-2. Una vez la aplicación está activa estará disponible en nuestro servidor local, `http://localhost:5000`.
+shell
+Copy code
 
-3. Teniendo en cuenta que hemos creado una API, vamos interactuar con la API utilizando herramientas como `cURL` desde la terminal. Aquí hay algunos ejemplos de cómo hacerlo:
+La API estará disponible en `http://127.0.0.1:5000`.
 
-   - Para obtener detalles de una tarea específica:
-     ```bash
-     curl http://localhost:5000/todos/todo1
-     ```
+## Métodos de la API
 
-   - Para crear una nueva tarea:
-     ```bash
-     curl -X POST -H "Content-Type: application/json" -d "{\"task\": \"Crear bbdd no relacional de una tienda de ropa.\"}" http://localhost:5000/todos/todo1
-     ```
+### Transacciones
 
-   - Para actualizar una tarea existente:
-     ```bash
-     curl -X PUT -H "Content-Type: application/json" -d "{\"task\": \"Crear bbdd no relacional Y SISTEMA GESTIÓN USUARIOS de una tienda de ropa.\"}" http://localhost:5000/todos/todo1
-     ```
-
-   - Para eliminar una tarea existente:
-     ```bash
-     curl -X DELETE http://localhost:5000/todos/todo1
-     ```
-
-A la hora de emplear `cURL` hemos definido diferentes parámetros:
-
-  - `-X`: Especifica el método HTTP a utilizar en la solicitud. Por ejemplo, `-X GET` realiza una solicitud `GET`, `-X POST` realiza una solicitud `POST`, etc.
-
-  - `-d`: Envía datos en el cuerpo de la solicitud. Por ejemplo, `-d "param1=value1&param2=value2"` envía datos con los parámetros y valores especificados al servidor. Aclaración, si nos fijamos en el ejemplo de uso, veremos que he añadido barras invertidas a las comillas interiores, esto se debe a que la consola que yo empleo necesita entender que las comillas interiores son parte del string y no parte del cuerpo de la solicitud.
-
-  - `-H`: Permite agregar encabezados personalizados a la solicitud HTTP. Por ejemplo, `-H "Content-Type: application/json"` establece el encabezado Content-Type como application/json.
-
-## Endpoints
-
-### `GET /todos/<string:todo_id>`
-
-Devuelve los detalles de una tarea específica.
-
-#### Parámetros de URL
-
-- `todo_id`: ID único de la tarea.
-
-#### Ejemplo de solicitud
+#### Obtener todas las transacciones
 
 ```bash
-curl http://localhost:5000/todos/todo1
-```
-
-#### Respuesta
-
-```json
-{
-    "task": "Acabar proyecto EDD."
-}
-```
-
-### `POST /todos/<string:todo_id>`
-
-Crea una nueva tarea.
-
-#### Parámetros de URL
-
-- `todo_id`: ID único de la tarea.
-
-#### Parámetros de cuerpo (JSON)
-
-- `task`: Descripción de la tarea.
-
-#### Ejemplo de solicitud
-
-```bash
-curl -X POST -H "Content-Type: application/json" -d '{"task": "Crear bbdd no relacional de una tienda de ropa."}' http://localhost:5000/todos/todo2
-```
-
-#### Respuesta
-
-```json
-{
-    "task": "Crear bbdd no relacional de una tienda de ropa."
-}
-```
-
-### `PUT /todos/<string:todo_id>`
-
-Actualiza una tarea existente.
-
-#### Parámetros de URL
-
-- `todo_id`: ID único de la tarea.
-
-#### Parámetros de cuerpo (JSON)
-
-- `task`: Nueva descripción de la tarea.
-
-#### Ejemplo de solicitud
-
-```bash
-curl -X PUT -H "Content-Type: application/json" -d '{"task": "Crear bbdd no relacional Y SISTEMA GESTIÓN USUARIOS de una tienda de ropa."}' http://localhost:5000/todos/todo2
-```
-
-#### Respuesta
-
-```json
-{
-    "task": "Crear bbdd no relacional Y SISTEMA GESTIÓN USUARIOS de una tienda de ropa."
-}
-```
-
-### `DELETE /todos/<string:todo_id>`
-
-Elimina una tarea existente.
-
-#### Parámetros de URL
-
-- `todo_id`: ID único de la tarea.
-
-#### Ejemplo de solicitud
-
-```bash
-curl -X DELETE http://localhost:5000/todos/todo2
-```
-
-#### Respuesta
-
-La respuesta será vacía y el estado de la respuesta será 204 (Sin contenido).
+curl -X GET http://127.0.0.1:5000/transactions
+Obtener una transacción específica
+bash
+Copy code
+curl -X GET http://127.0.0.1:5000/transactions/1
+Crear una nueva transacción
+bash
+Copy code
+curl -X POST -H "Content-Type: application/json" -d '{"concepto": "Pago de factura", "cantidad": 100, "fecha": "2024-05-01", "descripcion": "Pago de factura de electricidad"}' http://127.0.0.1:5000/transactions
+Actualizar una transacción existente
+bash
+Copy code
+curl -X PUT -H "Content-Type: application/json" -d '{"concepto": "Pago de factura de agua", "cantidad": 50, "fecha": "2024-05-02", "descripcion": "Pago de factura de agua"}' http://127.0.0.1:5000/transactions/1
+Eliminar una transacción
+bash
+Copy code
+curl -X DELETE http://127.0.0.1:5000/transactions/1
+Deudas
+Obtener todas las deudas
+bash
+Copy code
+curl -X GET http://127.0.0.1:5000/deudas
+Obtener una deuda específica
+bash
+Copy code
+curl -X GET http://127.0.0.1:5000/deudas/1
+Crear una nueva deuda
+bash
+Copy code
+curl -X POST -H "Content-Type: application/json" -d '{"concepto": "Préstamo", "cantidad": 200, "deudor": "Juan Pérez", "fecha": "2024-05-01", "comentario": "Préstamo para compra de libro", "pagada": false}' http://127.0.0.1:5000/deudas
+Actualizar una deuda existente
+bash
+Copy code
+curl -X PUT -H "Content-Type: application/json" -d '{"concepto": "Préstamo para libro", "cantidad": 150, "deudor": "Juan Pérez", "fecha": "2024-05-02", "comentario": "Préstamo para compra de libro", "pagada": false}' http://127.0.0.1:5000/deudas/1
+Eliminar una deuda
+bash
+Copy code
+curl -X DELETE http://127.0.0.1:5000/deudas/1
