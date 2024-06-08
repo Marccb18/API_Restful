@@ -218,52 +218,6 @@ api.add_resource(Deudas, '/deudas')
 def index():
     return render_template('index.html')
 
-@app.route('/ingreso', methods=['GET','POST'])
-def nuevo_ingreso():
-    form = IngresoForm()
-    if form.validate_on_submit():
-        concepto = form.concepto.data
-        cantidad = form.cantidad.data
-        fecha = form.fecha.data
-        descripcion = form.descripcion.data
-        if cantidad >= 0:
-            es_gasto = False
-        else:
-            es_gasto = True
-        new_transaccion = Transaccion(concepto=concepto,cantidad=cantidad,fecha=fecha,descripcion=descripcion,es_gasto=es_gasto)
-        db.session.add(new_transaccion)
-        db.session.commit()
-        return redirect(url_for('index'))
-    else:
-        return render_template('transaction.html', form=form)
-    
-
-@app.route('/ver_deudas', methods=['GET','POST'])
-def ver_deudas():
-    deudas = Deuda.query.all()
-    return render_template('ver_deudas.html',deudas=deudas)
-
-@app.route('/nueva_deuda', methods=['GET','POST'])
-def nueva_deuda():
-    form = DeudaForm()
-    if form.validate_on_submit():
-        concepto = form.concepto.data
-        cantidad = form.cantidad.data
-        deudor = form.deudor.data
-        fecha = form.fecha.data
-        comentario = form.comentario.data
-        pagada = form.pagada.data
-        nueva_deuda = Deuda(concepto=concepto,cantidad=cantidad,deudor=deudor,fecha=fecha,comentario=comentario,pagada=pagada)
-        
-        
-        return redirect(url_for('ver_deudas'))
-    else:
-        return render_template('nueva_deuda.html',form=form)
-
-
-
-
-
 
 if __name__ == '__main__':
     with app.app_context():
