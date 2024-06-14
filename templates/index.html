@@ -9,42 +9,46 @@
 <body>
     <section class="section">
         <div class="container">
-            <h1 class="title">Bienvenido al Banco MCB</h1>
-            <p>Seleccione una opción:</p>
-            <div class="columns">
-                <div class="column">
-                    <a class="box" href="#">
+            <h1 class="title has-text-centered">Bienvenido al Banco MCB</h1>
+            <p class="has-text-centered">Seleccione una opción:</p>
+
+            <div class="columns is-multiline is-centered">
+                <div class="column is-one-third">
+                    <a class="box has-text-centered" href="{{ url_for('nueva_transaccion') }}">
                         <p class="text">Dar de alta a ingresos y gastos</p>
-                        <!-- Aquí puedes agregar un formulario para dar de alta ingresos y gastos -->
                     </a>
                 </div>
-                <div class="column">
-                    <a class="box" href="#">
+                <div class="column is-one-third">
+                    <a href="{{ url_for('nueva_deuda') }}" class="box has-text-centered">
+                        <p class="text">Nueva deuda</p>
+                    </a>
+                </div>
+                <div class="column is-one-third">
+                    <a class="box has-text-centered" href="#">
                         <p class="text">Control de deudas</p>
-                        <!-- Aquí puedes agregar funcionalidades para el control de deudas -->
                     </a>
                 </div>
-                <div class="column">
-                    <a class="box" href="#">
+                <div class="column is-one-third">
+                    <a class="box has-text-centered" href="#">
                         <p class="text">Consultar el saldo actual</p>
                     </a>
                 </div>
             </div>
-            <div class="columns">
-                <div class="column">
-                    <div class="box">
-                        <h2 class="subtitle">Consultar balance de gastos</h2>
-                        <p>Seleccione el período:</p>
-                        <div class="buttons">
-                            <a class="button">Esta semana</a>
-                            <a class="button">Este mes</a>
-                            <a class="button">Este año</a>
-                        </div>
 
+            <div class="columns is-centered">
+                <div class="column is-half">
+                    <div class="box">
+                        <h2 class="subtitle has-text-centered">Consultar balance de gastos</h2>
+                        <p class="has-text-centered">Seleccione el período:</p>
+                        <div class="buttons is-centered">
+                            <a class="button is-primary">Esta semana</a>
+                            <a class="button is-link">Este mes</a>
+                            <a class="button is-info">Este año</a>
+                        </div>
                     </div>
                 </div>
-                <div class="column">
-                    <a class="box">
+                <div class="column is-half">
+                    <a class="box has-text-centered" href="#">
                         <p class="text">Consultar balance entre fechas</p>
                     </a>
                 </div>
