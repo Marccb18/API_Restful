@@ -21,6 +21,9 @@
         {% else %}
             <p class="content">Error al obtener el saldo actual. Por favor, inténtalo de nuevo más tarde.</p>
         {% endif %}
+        <div class="control">
+            <a href="{{ url_for('index') }}" class="button is-link">Volver</a>
+        </div>
     </div>
 </body>
 </html>

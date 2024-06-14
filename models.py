@@ -16,6 +16,6 @@ class Deuda(db.Model):
     concepto = db.Column(db.String(100))
     cantidad = db.Column(db.Float)
     deudor = db.Column(db.String(200))
-    fecha = db.Column(db.Date)
-    comentario = db.Column(db.String(300))
+    fecha = db.Column(db.Date, nullable=True)
+    comentario = db.Column(db.String(300), nullable=True)
     pagada = db.Column(db.Boolean, default=False)

@@ -24,18 +24,18 @@
                     <tbody>
                         {% if deudas %}
                             {% for item in deudas %}
-                                <tr>
-                                    <td>{{ item.concepto }}</td>
-                                    <td>{{ item.cantidad }}</td>
-                                    <td>{{ item.fecha }}</td>
-                                    <td>{{ item.descripcion }}</td>
-                                    <td>
+                                <tr {% if item.pagada %} style="background-color: rgba(20, 168, 20, 0.714);" {% else %} style="background-color: rgba(236, 78, 78, 0.725);" {% endif %}>
+                                    <td style="color: white;">{{ item.concepto }}</td>
+                                    <td style="color: white;">{{ item.cantidad }}</td>
+                                    <td style="color: white;">{{ item.fecha }}</td>
+                                    <td style="color: white;">{{ item.descripcion }}</td>
+                                    <td style="color: white;">
                                         <label class="checkbox">
                                             <input type="checkbox" name="deuda_{{ item.id }}" {% if item.pagada %} checked {% endif %}>
                                         </label>
                                     </td>
                                 </tr>
-                            {% endfor %}k
+                            {% endfor %}
                         {% else %}
                             <tr>
                                 <td colspan="5">No hay deudas pendientes</td>
@@ -49,6 +49,9 @@
                     </div>
                     <div class="control">
                         <a href="{{ url_for('nueva_deuda') }}" class="button is-link">Nueva Deuda</a>
+                    </div>
+                    <div class="control">
+                        <a href="{{ url_for('index') }}" class="button is-link">Volver</a>
                     </div>
                 </div>
             </form>
