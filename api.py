@@ -1,6 +1,8 @@
+from flask import jsonify
 from flask_restful import Api, Resource, reqparse
 from models import db, Transaccion,Deuda
-import datetime
+from datetime import datetime, timedelta
+
 
 api = Api()
 
