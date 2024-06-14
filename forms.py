@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, DateField, SubmitField
+from wtforms import StringField, IntegerField, DateField, SubmitField, BooleanField
 from wtforms.validators import DataRequired
 
 class IngresoForm(FlaskForm):
@@ -15,4 +15,5 @@ class DeudaForm(FlaskForm):
     deudor = StringField('Deudor', validators=[DataRequired()])
     fecha = DateField('Fecha (Opcional)')
     comentario = StringField('Comentario')
+    pagada = BooleanField('Pagada')
     submit = SubmitField('Aceptar')
