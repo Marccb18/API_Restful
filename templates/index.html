@@ -13,22 +13,22 @@
             <p class="has-text-centered">Seleccione una opción:</p>
 
             <div class="columns is-multiline is-centered">
-                <div class="column is-one-third">
+                <div class="column is-one-quarter">
                     <a class="box has-text-centered" href="{{ url_for('nueva_transaccion') }}">
                         <p class="text">Dar de alta a ingresos y gastos</p>
                     </a>
                 </div>
-                <div class="column is-one-third">
+                <div class="column is-one-quarter">
                     <a href="{{ url_for('nueva_deuda') }}" class="box has-text-centered">
                         <p class="text">Nueva deuda</p>
                     </a>
                 </div>
-                <div class="column is-one-third">
+                <div class="column is-one-quarter">
                     <a class="box has-text-centered" href="{{ url_for('ver_deudas') }}">
                         <p class="text">Control de deudas</p>
                     </a>
                 </div>
-                <div class="column is-one-third">
+                <div class="column is-one-quarter">
                     <a class="box has-text-centered" href="{{ url_for('saldo_actual') }}">
                         <p class="text">Consultar el saldo actual</p>
                     </a>
@@ -41,16 +41,11 @@
                         <h2 class="subtitle has-text-centered">Consultar balance de gastos</h2>
                         <p class="has-text-centered">Seleccione el período:</p>
                         <div class="buttons is-centered">
-                            <a class="button is-primary">Esta semana</a>
-                            <a class="button is-link">Este mes</a>
-                            <a class="button is-info">Este año</a>
+                            <a class="button is-primary" href="{{ url_for('balance_semanal') }}">Semanal</a>
+                            <a class="button is-link" href="{{ url_for('balance_mensual') }}">Mensual</a>
+                            <a class="button is-info" href="{{ url_for('balance_anual') }}">Anual</a>
                         </div>
                     </div>
-                </div>
-                <div class="column is-half">
-                    <a class="box has-text-centered" href="#">
-                        <p class="text">Consultar balance entre fechas</p>
-                    </a>
                 </div>
             </div>
         </div>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Balance Mensual</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Balance Mensual</h1>
+            <div class="table-container">
+                <table class="table is-striped is-fullwidth">
+                        <tr>
+                            <th>Mes</th>
+                            <th>Balance</th>
+                        </tr>
+                    <tbody>
+                        {% for mes, balance in balance %}
+                            <tr>
+                                <td>{{ mes }}</td>
+                                <td>{{ balance }} €</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="control">
+                <a href="{{ url_for('index') }}" class="button is-link">Volver</a>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

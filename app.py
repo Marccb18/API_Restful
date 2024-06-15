@@ -73,6 +73,60 @@ def ver_deudas():
         return redirect(url_for('ver_deudas'))
     return render_template('ver_deudas.html', deudas=deudas)
 
+@app.route('/balance_semanal')
+def balance_semanal():
+    transacciones = Transaccion.query.all()
+    transacciones_por_semana = {}
+    for i in transacciones:
+        fecha_transaccion = i.fecha
+        semana_inicio = fecha_transaccion - timedelta(days=fecha_transaccion.weekday())
+        semana_inicio_str = semana_inicio.strftime('%Y-%m-%d')
+
+        if semana_inicio_str not in transacciones_por_semana:
+            transacciones_por_semana[semana_inicio_str] = 0
+
+        transacciones_por_semana[semana_inicio_str] += i.cantidad
+
+    balance_semanal = sorted(transacciones_por_semana.items())
+
+    return render_template('balance_semanal.html', balance=balance_semanal)
+
+
+@app.route('/balance_mensual')
+def balance_mensual():
+    transacciones = Transaccion.query.all()
+    transacciones_por_mes = {}
+    for i in transacciones:
+        fecha_transaccion = i.fecha
+        mes_inicio = fecha_transaccion.replace(day=1)
+        mes_inicio_str = mes_inicio.strftime('%Y-%m')
+
+        if mes_inicio_str  not in transacciones_por_mes:
+            transacciones_por_mes[mes_inicio_str] = 0
+
+        transacciones_por_mes[mes_inicio_str] += i.cantidad
+
+    balance_mensual = sorted(transacciones_por_mes.items())
+
+    return render_template('balance_mensual.html', balance=balance_mensual)
+
+@app.route('/balance_anual')
+def balance_anual():
+    transacciones = Transaccion.query.all()
+    transacciones_por_ano = {}
+    for i in transacciones:
+        fecha_transaccion = i.fecha
+        ano_inicio_str = fecha_transaccion.strftime('%Y')
+
+        if ano_inicio_str not in transacciones_por_ano:
+            transacciones_por_ano[ano_inicio_str] = 0
+        
+        transacciones_por_ano[ano_inicio_str] += i.cantidad
+    
+    balance_anual = sorted(transacciones_por_ano.items())
+
+    return render_template('balance_anual.html', balance=balance_anual)
+        
 
 if __name__ == '__main__':
     with app.app_context():
